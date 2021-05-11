@@ -3,8 +3,6 @@
 //        Animation stats in debug
 
 import java.util.Arrays;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,7 +20,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.util.Duration;
 
 public class MainClass extends Application {
     public final int SIZE = RecursiveFractal.SIZE;
@@ -31,8 +28,6 @@ public class MainClass extends Application {
     public CurvePane curvPane = new CurvePane();
     public DebugBox dbgBox = new DebugBox();
     public HBox buttonBox = new HBox(15);
-    public Timeline animation;
-    
     
     @Override
     public void start(Stage primaryStage) {
@@ -85,11 +80,11 @@ public class MainClass extends Application {
 /*21*/      new Text(txt(" Starting: " + curvPane.get(3).getCurve().visibleProperty().getValue())),
 /*22*/      new Text(txt(" Previous: " + curvPane.get(4).getCurve().visibleProperty().getValue())),
 /*23*/      new Text(txt(hr('-'))),
-/*24*/      new Text(txt("ANIMATION:")),
-/*25*/      new Text(txt(" Status: " + curvPane.getStatus())),
-/*26*/      new Text(txt(" Frame: " + curvPane.getFrame())),
-/*27*/      new Text(txt(" Target FPS: " + RecursiveFractal.FPS)),
-/*28*/      new Text(txt(" ")),
+/*24*/      new Text(txt("PRIMARY:")),
+/*25*/      new Text(txt(" Points: " + curvPane.get(0).getPoints().size())),
+/*26*/      new Text(txt("")),
+/*27*/      new Text(txt("")),
+/*28*/      new Text(txt("")),
 /*29*/      new Text(txt("")),
 /*30*/      new Text(txt("")),
 /*31*/      new Text(txt("")),
@@ -101,8 +96,8 @@ public class MainClass extends Application {
 /*37*/      new Text(txt("")),
 /*38*/      new Text(txt(hr('='))),
 /*39*/      new Text(txt("BUILD:")),
-/*40*/      new Text(txt(" v0.1.2")),
-/*41*/      new Text(txt(" On 10 May, 2021")),
+/*40*/      new Text(txt(" v0.1.1")),
+/*41*/      new Text(txt(" On 7 May, 2021")),
 /*42*/      new Text(txt("")),
 /*43*/      new Text(txt("")),
 /*44*/      new Text(txt("   Coded by Aaron Rogers")),
@@ -132,8 +127,6 @@ public class MainClass extends Application {
             txts[13].setText(txt(" Target:   " + curvPane.get(2).getLevel()));
             txts[14].setText(txt(" Starting: " + curvPane.get(3).getLevel()));
             txts[15].setText(txt(" Previous: " + curvPane.get(4).getLevel()));
-            txts[25].setText(txt(" Status: " + curvPane.getStatus()));
-            txts[26].setText(txt(" Frame: " + curvPane.getFrame()));
         }
         private String txt(String s) {
             String end = "|" + s;
@@ -156,30 +149,12 @@ public class MainClass extends Application {
         // Lunch
         Application.launch(args);
     }
-    public void animate() {
-            EventHandler < ActionEvent > eventHandler = e -> {
-                try {
-                    curvPane.animate(true);
-                    dbgBox.update();
-                } catch (Exception ex) {
-                    System.out.println(ex.getMessage());
-                }
-            };
-            curvPane.resetFrames();
-            curvPane.getMovementFrames();
-            animation = new Timeline(new KeyFrame(Duration.millis(500 
-                    / RecursiveFractal.FPS), eventHandler));
-            animation.setCycleCount(RecursiveFractal.FPS);
-            animation.play();
-        }
     
     class NextCCurve implements EventHandler < ActionEvent > {
         @Override
         public void handle(ActionEvent e) {
-            if(animation != null) {animation.stop();}
             curvPane.nextAllCurves();
             dbgBox.update();
-            animate();
         }
     }
     

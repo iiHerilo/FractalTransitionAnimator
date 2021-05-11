@@ -17,15 +17,14 @@ public class CCurve extends RecursiveFractal {
     public final static double x2() {return startPoints[2];}
     public final static double y2() {return startPoints[3];}
     public final static void setPoints(double x1, double y1, double x2, double y2) {
-        startPoints[0] = x1 + HALF;
-        startPoints[1] = y1 + HALF;
-        startPoints[2] = x2 + HALF;
-        startPoints[3] = y2 + HALF;
+        startPoints[0] = x1 + RecursiveFractal.HALF;
+        startPoints[1] = y1 + RecursiveFractal.HALF;
+        startPoints[2] = x2 + RecursiveFractal.HALF;
+        startPoints[3] = y2 + RecursiveFractal.HALF;
     }
     public final static void setPoints(int x1, int y1, int x2, int y2) {
         setPoints((double) x1, (double) y1, (double) x2, (double) y2);
     } 
-    
     
     // Main Parameters
     private Polyline curve = null;
@@ -126,17 +125,12 @@ public class CCurve extends RecursiveFractal {
     // Mostly copied from "obslistDoubler" of the older program.
     // Takes the midpoints in between each point in a polyline
     public void Midpointify() {
-        dbgl("midpointifyign");
-        if(level <= 0) {
-            dbgl("level is <= 0");
+        if(level < 0) {
             firstPosition();
-            dbgl("1, " + points.size());
             points.add(x1());
             points.add(y1());
-            dbgl("2, " + points.size());
         }
         else {
-            dbgl("level is over 0");
             Midpointify(points);
         }
         
@@ -179,6 +173,4 @@ public class CCurve extends RecursiveFractal {
         points.set(points.size() - 2, (double) x2());
         points.set(points.size() - 1, (double) y2());
     }
-    
-    
 }
