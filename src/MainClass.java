@@ -1,6 +1,4 @@
 // TO DO: Enable/Disable Debug
-//        Animate
-//        Animation stats in debug
 
 import java.util.Arrays;
 import javafx.animation.KeyFrame;
@@ -37,12 +35,11 @@ public class MainClass extends Application {
     @Override
     public void start(Stage primaryStage) {
         buttonBox.setPadding(new Insets(15, 15, 15, 15));
-        Button btNext = new Button("Next Iteration");
-        Button btPrev = new Button("Prev Iteration");
+        Button btNext = new Button("Next Iteration"),
+               btPrev = new Button("Prev Iteration");
         btNext.setOnAction(new NextCCurve());
         btPrev.setOnAction(new PrevCCurve());
-        buttonBox.getChildren().add(btNext);
-        buttonBox.getChildren().add(btPrev);
+        buttonBox.getChildren().addAll(btNext, btPrev);
         
         mainPane.setCenter(curvPane);
         mainPane.setBottom(buttonBox);
@@ -89,20 +86,20 @@ public class MainClass extends Application {
 /*25*/      new Text(txt(" Status: " + curvPane.getStatus())),
 /*26*/      new Text(txt(" Frame: " + curvPane.getFrame())),
 /*27*/      new Text(txt(" Target FPS: " + RecursiveFractal.FPS)),
-/*28*/      new Text(txt(" ")),
-/*29*/      new Text(txt("")),
-/*30*/      new Text(txt("")),
-/*31*/      new Text(txt("")),
-/*32*/      new Text(txt("")),
-/*33*/      new Text(txt("")),
-/*34*/      new Text(txt("")),
-/*35*/      new Text(txt("")),
-/*36*/      new Text(txt("")),
-/*37*/      new Text(txt("")),
+/*28*/      new Text(txt(" Reserved: Forward")),
+/*29*/      new Text(txt(" Reserved: Stack")),
+/*30*/      //new Text(txt(hr('-'))),
+/*31*/      //new Text(txt("")),
+/*32*/      //new Text(txt("")),
+/*33*/      //new Text(txt("")),
+/*34*/      //new Text(txt("")),
+/*35*/      //new Text(txt("")),
+/*36*/      //new Text(txt("")),
+/*37*/      //new Text(txt("")),
 /*38*/      new Text(txt(hr('='))),
 /*39*/      new Text(txt("BUILD:")),
-/*40*/      new Text(txt(" v0.1.2")),
-/*41*/      new Text(txt(" On 10 May, 2021")),
+/*40*/      new Text(txt(" v0.2.0")),
+/*41*/      new Text(txt(" On 12 May, 2021")),
 /*42*/      new Text(txt("")),
 /*43*/      new Text(txt("")),
 /*44*/      new Text(txt("   Coded by Aaron Rogers")),
@@ -120,7 +117,8 @@ public class MainClass extends Application {
             txts[9].setStyle("-fx-font-weight: bold");
             txts[17].setStyle("-fx-font-weight: bold");
             txts[24].setStyle("-fx-font-weight: bold");
-            txts[39].setStyle("-fx-font-weight: bold");
+            txts[31].setStyle("-fx-font-weight: bold");
+            //txts[39].setStyle("-fx-font-weight: bold");
             
             getChildren().addAll(Arrays.asList(txts));
             
@@ -134,6 +132,8 @@ public class MainClass extends Application {
             txts[15].setText(txt(" Previous: " + curvPane.get(4).getLevel()));
             txts[25].setText(txt(" Status: " + curvPane.getStatus()));
             txts[26].setText(txt(" Frame: " + curvPane.getFrame()));
+            txts[28].setText(txt(" Forward: " + curvPane.forward));
+            txts[29].setText(txt(" Stack: " + curvPane.prevStack));
         }
         private String txt(String s) {
             String end = "|" + s;
@@ -176,8 +176,9 @@ public class MainClass extends Application {
     class NextCCurve implements EventHandler < ActionEvent > {
         @Override
         public void handle(ActionEvent e) {
-            if(animation != null) {animation.stop();}
             curvPane.nextAllCurves();
+            dbgBox.update();
+            if(animation != null) {animation.stop();}
             dbgBox.update();
             animate();
         }
@@ -186,8 +187,16 @@ public class MainClass extends Application {
     class PrevCCurve implements EventHandler < ActionEvent > {
         @Override
         public void handle(ActionEvent e) {
-            curvPane.prevAllCurves();
-            dbgBox.update();
+            if(curvPane.getLevel() > 0) {
+                if(curvPane.forward == true) {
+                    animation.stop();
+                }
+                curvPane.prevAllCurves();
+                dbgBox.update();
+                if(animation != null) {animation.stop();}
+                    dbgBox.update();
+                animate();
+            }
         }
     }
 }
