@@ -94,12 +94,14 @@ public class CCurve extends RecursiveFractal {
     // First position, first x and y values only
     public void firstPosition() {
         points.clear();
-        points.addAll(x1(), y1());
+        points.add(x1());
+        points.add(y1());
     }
     // Perform the CCurve function from 4 points and a level.
     public void curve(double x1, double y1, double x2, double y2, int level) {
         if (level <= 0) {
-            points.addAll(x2, y2);
+            points.add(x2);
+            points.add(y2);
         } else {
             double xm = (x1 + x2 + y1 - y2) / 2;
             double ym = (x2 + y1 + y2 - x1) / 2;
@@ -129,7 +131,8 @@ public class CCurve extends RecursiveFractal {
             dbgl("level is <= 0");
             firstPosition();
             dbgl("1, " + points.size());
-            points.addAll(x1(), y1());
+            points.add(x1());
+            points.add(y1());
             dbgl("2, " + points.size());
         }
         else {
@@ -151,22 +154,28 @@ public class CCurve extends RecursiveFractal {
     public static void Midpointify(ObservableList points) {
         Object[] oldpoints = points.toArray();
         points.clear();
-        points.addAll(x1(), y1());
+        points.add(x1());
+        points.add(y1());
         if (oldpoints.length == 4) {
-            points.addAll((x1() + x2()) / 2, (y1() + y2()) / 2, x2(), y2());
+            points.add((x1() + x2()) / 2);
+            points.add((y1() + y2()) / 2);
+            points.add(x2());
+            points.add(y2());
         } else {
             for (int i = 2; i < oldpoints.length - 1; i += 2) {
-                double x1 = (double) oldpoints[i - 2],
-                       y1 = (double) oldpoints[i - 1],
-                       x2 = (double) oldpoints[i],
-                       y2 = (double) oldpoints[i + 1];
-                points.addAll((x1 + x2) / 2, (y1 + y2) / 2, x2, y2);
+                double x1 = (double) oldpoints[i - 2];
+                double y1 = (double) oldpoints[i - 1];
+                double x2 = (double) oldpoints[i];
+                double y2 = (double) oldpoints[i + 1];
+                points.add((x1 + x2) / 2);
+                points.add((y1 + y2) / 2);
+                points.add(x2);
+                points.add(y2);
             }
         }
-        // failsafe
         points.set(0, (double) x1());
         points.set(1, (double) y1());
-        // failsale
+
         points.set(points.size() - 2, (double) x2());
         points.set(points.size() - 1, (double) y2());
     }

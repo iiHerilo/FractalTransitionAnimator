@@ -16,7 +16,7 @@ public class CurvePane extends Pane {
     public void setLevel(int lvl) {paneLevel = lvl; setCorrectLevels();}
     public void incrementLevel() {paneLevel++; setCorrectLevels();}
     public void decrementLevel() {paneLevel--; setCorrectLevels();}
-    private boolean allvis = true;
+    private boolean allvis = false;
     
     private final CCurve[] curves = {
         new CCurve(Color.BLACK, true, false),    // PRIMARY CURVE  lvl-1 -> lvl 0
@@ -25,7 +25,6 @@ public class CurvePane extends Pane {
         new CCurve(Color.MAGENTA, allvis, true), // STARTING CURVE lvl-1        3
         new CCurve(Color.CYAN, allvis, true)     // PREV CURVE     lvl-2        4
     };
-    private CCurve tarAlt = new CCurve(Color.RED, allvis, true);
     public CCurve mainCurve() {return curves[0];}
     
     // TARGET CURVE   = A
@@ -38,8 +37,6 @@ public class CurvePane extends Pane {
     private int framecounter = 0;
     private double[] mvmntFrames;
     private boolean animating = false;
-    public boolean forward = true;
-    public int prevStack = 0;
     public int getFrame() {return framecounter;}
     public void resetFrames() {framecounter = 0;}
     public double getMvmntFrame(int index) {return mvmntFrames[index];}
@@ -55,21 +52,10 @@ public class CurvePane extends Pane {
         for(CCurve curve : curves) {
             this.getChildren().add(curve.getCurve()); 
         }
-        this.getChildren().add(tarAlt.getCurve());
         allCurves();
-        tarAlt.setPoints(curves[2].getPoints());
-    }
-    
-    public void fixCurves() {
-        for(CCurve curve : curves) {
-            curve.fullCurve();
-        }
     }
     
     public final void nextAllCurves() {
-        if(!forward) fixCurves();
-        //curves[2].setPoints(tarAlt.getPoints());
-        forward = true;
         incrementLevel();
         for(int i=curves.length-1; i > 1; i--) {
             curves[i].setPoints(curves[i-1].getPoints());
@@ -79,7 +65,7 @@ public class CurvePane extends Pane {
         System.out.println("No Midpointify, " + (curves[0].getPoints().size() == curves[2].getPoints().size()));
         curves[0].Midpointify();
         System.out.println("Ye Midpointify, " + (curves[0].getPoints().size() == curves[2].getPoints().size()));
-        tarAlt.setPoints(curves[2].getPoints());
+        //animate(true);
         
     }
     public final void nextAllCurves2() {
@@ -88,7 +74,6 @@ public class CurvePane extends Pane {
             curves[i].setPoints(curves[i-1].getPoints());
         }
         curves[1].fullCurve();
-        tarAlt.setPoints(curves[2].getPoints()); 
         curves[0].setPoints(curves[2].getPoints()); 
         //curves[0].Midpointify();
         //animate(true);
@@ -97,21 +82,12 @@ public class CurvePane extends Pane {
     
     
     public final void prevAllCurves() {
-        prevStack++;
-        if(forward) fixCurves();
-        tarAlt.setPoints(curves[3].getPoints());
-        //curves[2].setPoints(tarAlt.getPoints());
-        forward = false;
         decrementLevel();
         for(int i=1; i < curves.length-1; i++) {
             curves[i].setPoints(curves[i+1].getPoints());
         }
         curves[4].fullCurve();
-        //curves[0].setPoints(curves[2].getPoints());
-        //tarAlt.setPoints(curves[2].getPoints());
-        for(int i=0;i<prevStack;i++) {
-            curves[2].Midpointify();
-        }
+        curves[0].setPoints(curves[2].getPoints());
     }
     
     public final void allCurves() {
@@ -167,24 +143,13 @@ public class CurvePane extends Pane {
     
     public void getMovementFrames() {
         mvmntFrames = new double[curves[0].getPoints().size()];
-        if(!forward && paneLevel == 0) {
-            curves[2].setLevel(1);
-            for(int i=0;i<prevStack;i++) {
-                curves[2].Midpointify();
-            }
+        for(int i=0; i<mvmntFrames.length-1; i++) {
+            mvmntFrames[i] = ((double)curves[0].getPoints().get(i) -
+                              (double)curves[2].getPoints().get(i)) / FPS;
         }
-        //else {
-            for(int i=0; i<mvmntFrames.length-1; i++) {
-                mvmntFrames[i] = ((double)curves[0].getPoints().get(i) -
-                                  (double)curves[2].getPoints().get(i)) / FPS;
-            }
-            if(!forward && paneLevel == 0) {mvmntFrames[2] /= 2;
-                                            mvmntFrames[3] /= 2;}
-        //}
     }
     
     public void animate(boolean forward) {
-        animating = true;
         framecounter++;
         if(paneLevel == 0) {
             curves[0].getPoints().set(2, (double)curves[0].getPoints().get(2) - mvmntFrames[2]);
@@ -192,17 +157,6 @@ public class CurvePane extends Pane {
         }
         for(int i=0; i<curves[0].getPoints().size(); i++) {
             curves[0].getPoints().set(i, (double)curves[0].getPoints().get(i) - mvmntFrames[i]);
-        }
-        if(framecounter == FPS) {
-            wrapUp();
-        }
-    }
-    public void wrapUp() {
-        animating = false;
-        if(!forward) {
-            dbgl("Wrapping up...");
-            curves[0].setPoints(tarAlt.getPoints());
-            prevStack = 0;
         }
     }
     
