@@ -1,6 +1,8 @@
 // TO DO: Enable/Disable Debug
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -14,8 +16,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 //import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 //import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 //import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -27,7 +32,7 @@ public class MainClass extends Application {
     public final int HALF = RecursiveFractal.HALF;
     public BorderPane mainPane = new BorderPane();
     public CurvePane curvPane = new CurvePane();
-    public DebugBox dbgBox = new DebugBox();
+    public DebugMenu dbgBox = new DebugMenu();
     public HBox buttonBox = new HBox(15);
     public Timeline animation;
     
@@ -54,103 +59,161 @@ public class MainClass extends Application {
 
     }
     
-    public class DebugBox extends TextFlow {
+    // There are probably 1 million better ways to make a debug menu
+    public class DebugMenu extends VBox {
+        private final String BOLD = "-fx-font-weight: bold";
         private final int max = 26;
-        protected Text[] txts = 
-        {
-/*0*/       new Text(txt(hr('='))), // bold
-/*1*/       new Text(txt("DEBUG")), // bold
-/*2*/       new Text(txt(hr('='))), // bold
-/*3*/       new Text(txt("PANE:")), // bold
-/*4*/       new Text(txt(" SIZE:     " + SIZE)),
-/*5*/       new Text(txt(" HALF:     " + HALF)),
-/*6*/       new Text(txt(" POINT1:  (" + CCurve.x1() + ", " + CCurve.y1() + ")")),
-/*7*/       new Text(txt(" POINT2:  (" + CCurve.x2() + ", " + CCurve.y2() + ")")),
-/*8*/       new Text(txt(hr('-'))),
-/*9*/       new Text(txt("LEVELS:")), // bold
-/*10*/      new Text(txt(" Global:   " + curvPane.getLevel())),
-/*11*/      new Text(txt(" Primary:  " + curvPane.get(0).getLevel())),
-/*12*/      new Text(txt(" Next:     " + curvPane.get(1).getLevel())),
-/*13*/      new Text(txt(" Target:   " + curvPane.get(2).getLevel())),
-/*14*/      new Text(txt(" Starting: " + curvPane.get(3).getLevel())),
-/*15*/      new Text(txt(" Previous: " + curvPane.get(4).getLevel())),
-/*16*/      new Text(txt(hr('-'))),
-/*17*/      new Text(txt("VISIBILITY:")),
-/*18*/      new Text(txt(" Primary:  " + curvPane.get(0).getCurve().visibleProperty().getValue())),
-/*19*/      new Text(txt(" Next:     " + curvPane.get(1).getCurve().visibleProperty().getValue())),
-/*20*/      new Text(txt(" Target:   " + curvPane.get(2).getCurve().visibleProperty().getValue())),
-/*21*/      new Text(txt(" Starting: " + curvPane.get(3).getCurve().visibleProperty().getValue())),
-/*22*/      new Text(txt(" Previous: " + curvPane.get(4).getCurve().visibleProperty().getValue())),
-/*23*/      new Text(txt(hr('-'))),
-/*24*/      new Text(txt("ANIMATION:")),
-/*25*/      new Text(txt(" Status: " + curvPane.getStatus())),
-/*26*/      new Text(txt(" Frame: " + curvPane.getFrame())),
-/*27*/      new Text(txt(" Target FPS: " + RecursiveFractal.FPS)),
-/*28*/      new Text(txt(" Reserved: Forward")),
-/*29*/      new Text(txt(" Reserved: Stack")),
-/*30*/      //new Text(txt(hr('-'))),
-/*31*/      //new Text(txt("")),
-/*32*/      //new Text(txt("")),
-/*33*/      //new Text(txt("")),
-/*34*/      //new Text(txt("")),
-/*35*/      //new Text(txt("")),
-/*36*/      //new Text(txt("")),
-/*37*/      //new Text(txt("")),
-/*38*/      new Text(txt(hr('='))),
-/*39*/      new Text(txt("BUILD:")),
-/*40*/      new Text(txt(" v0.2.0")),
-/*41*/      new Text(txt(" On 12 May, 2021")),
-/*42*/      new Text(txt("")),
-/*43*/      new Text(txt("")),
-/*44*/      new Text(txt("   Coded by Aaron Rogers")),
-/*45*/      new Text(txt("                \u00A9 Herilo")),
-/*46*/      new Text(txt(hr('='))),
-
-
-        };
-        public DebugBox() {
-            for(Text txt : txts) {
+        private final CheckBox chkBox = new CheckBox();
+        private final Label lblChkBox = new Label("Show Debug");
+        private final TextFlow txtHeader = new TextFlow();
+        private final TextFlow txtBody = new TextFlow();
+        private final List<Text> body = new ArrayList<>();
+        public boolean bodyVisible = false;
+        private final HBox chkandlbl = new HBox();
+        
+    
+        public DebugMenu() {
+            super();
+            chkandlbl.getChildren().addAll(lblChkBox, chkBox);
+            getChildren().addAll(txtHeader, txtBody, chkandlbl);
+            setHeader();
+            EventHandler<ActionEvent> setorhide_body = e -> {
+                if(!bodyVisible) setBody();
+                else txtBody.getChildren().clear();
+                bodyVisible = !bodyVisible;
+            };
+            chkBox.setOnAction(setorhide_body);
+        }
+        
+        public final void setHeader() {
+            txtHeader.getChildren().clear();
+            Text[] items = {
+                new Text(lBORD + hr('=') + rBORD), // 0
+                new Text(lBORD), 
+                new Text(spo("FRACTAL TRANSITION ANIMATOR")), 
+                new Text(rBORD),
+                new Text(lBORD + spo("v0.2-beta.1") + rBORD),
+                new Text(lBORD + spo("on 13 May 2021") + rBORD), // 5
+                new Text(lBORD + spo("") + rBORD),
+                new Text(lBORD + spoR("Coded by Aaron Rogers") + rBORD),
+                new Text(lBORD + spoR("\u00A9 Herilo") + rBORD),
+                new Text(lBORD + hr('=') + " |")
+            };
+            items[2].setStyle(BOLD);
+            for(Text txt : items) {
                 txt.setFont(Font.font("Courier New", 12));
             }
-            txts[1].setStyle("-fx-font-weight: bold");
-            txts[3].setStyle("-fx-font-weight: bold");
-            txts[9].setStyle("-fx-font-weight: bold");
-            txts[17].setStyle("-fx-font-weight: bold");
-            txts[24].setStyle("-fx-font-weight: bold");
-            txts[31].setStyle("-fx-font-weight: bold");
-            //txts[39].setStyle("-fx-font-weight: bold");
-            
-            getChildren().addAll(Arrays.asList(txts));
-            
+            txtHeader.getChildren().addAll(Arrays.asList(items));
         }
-        public void update() {
-            txts[10].setText(txt(" Global:   " + curvPane.getLevel()));
-            txts[11].setText(txt(" Primary:  " + curvPane.get(0).getLevel()));
-            txts[12].setText(txt(" Next:     " + curvPane.get(1).getLevel()));
-            txts[13].setText(txt(" Target:   " + curvPane.get(2).getLevel()));
-            txts[14].setText(txt(" Starting: " + curvPane.get(3).getLevel()));
-            txts[15].setText(txt(" Previous: " + curvPane.get(4).getLevel()));
-            txts[25].setText(txt(" Status: " + curvPane.getStatus()));
-            txts[26].setText(txt(" Frame: " + curvPane.getFrame()));
-            txts[28].setText(txt(" Forward: " + curvPane.forward));
-            txts[29].setText(txt(" Stack: " + curvPane.prevStack));
+        
+        public final void setBody() {
+            body.clear();
+            body.add(new Text(lBORD)); // 0
+            body.add(bold(new Text(spo("DEBUG"))));
+            body.add(new Text(rBORD));
+            body.add(new Text(lBORD + hr('=') + rBORD));
+            body.add(new Text(lBORD));
+            body.add(bold(new Text(spo("PANE:")))); // 5
+            body.add(new Text(rBORD));
+            body.add(new Text(lBORD + spo("SIZE:     " + SIZE) + rBORD));
+            body.add(new Text(lBORD + spo("HALF:     " + HALF) + rBORD));
+            body.add(new Text(lBORD + spo("POINT1:  (" + CCurve.x1() + ", " + CCurve.y1() + ")") + rBORD));
+            body.add(new Text(lBORD + spo("POINT2:  (" + CCurve.x2() + ", " + CCurve.y2() + ")") + rBORD)); // 10
+            body.add(new Text(lBORD + hr('-') + rBORD));
+            body.add(new Text(lBORD));
+            body.add(bold(new Text(spo("LEVELS:"))));
+            body.add(new Text(rBORD));
+            body.add(new Text(lBORD + spo("global") + rBORD)); // 15
+            body.add(new Text(lBORD + spo("primary") + rBORD));
+            body.add(new Text(lBORD + spo("next") + rBORD));
+            body.add(new Text(lBORD + spo("target") + rBORD)); 
+            body.add(new Text(lBORD + spo("starting") + rBORD));
+            body.add(new Text(lBORD + spo("prev") + rBORD)); // 20
+            body.add(new Text(lBORD + hr('-') + rBORD));
+            body.add(new Text(lBORD));
+            body.add(bold(new Text(spo("VISIBILITY:"))));
+            body.add(new Text(rBORD));
+            body.add(new Text(lBORD + spo("primary") + rBORD)); // 25
+            body.add(new Text(lBORD + spo("next") + rBORD));
+            body.add(new Text(lBORD + spo("target") + rBORD));
+            body.add(new Text(lBORD + spo("starting") + rBORD));
+            body.add(new Text(lBORD + spo("prev") + rBORD));
+            body.add(new Text(lBORD + hr('-') + rBORD)); // 30
+            body.add(new Text(lBORD));
+            body.add(bold(new Text(spo("ANIMATION:"))));
+            body.add(new Text(rBORD));
+            body.add(new Text(lBORD + spo("status") + rBORD));
+            body.add(new Text(lBORD + spo("frame") + rBORD));//35
+            body.add(new Text(lBORD + spo("Target FPS: " + RecursiveFractal.FPS) + rBORD));
+            body.add(new Text(lBORD + spo("forward") + rBORD));
+            body.add(new Text(lBORD + spo("stack") + rBORD));
+            body.add(new Text(lBORD + hr('=') + rBORD));
+            body.forEach((txt) -> {
+                txt.setFont(Font.font("Courier New", 12));
+            });
+            txtBody.getChildren().addAll(body);
         }
-        private String txt(String s) {
-            String end = "|" + s;
-            for(int i=end.length(); i<=max; i++) {
-                end+=" ";
+        
+        public final void update() {
+            if(bodyVisible) {
+                body.set(15, new Text(lBORD + spo("Global:   " + curvPane.getLevel()) + rBORD));
+                body.set(16, new Text(lBORD + spo("Primary:  " + curvPane.get(0).getLevel()) + rBORD));
+                body.set(17, new Text(lBORD + spo("Next:     " + curvPane.get(1).getLevel()) + rBORD));
+                body.set(18, new Text(lBORD + spo("Target:   " + curvPane.get(2).getLevel()) + rBORD)); 
+                body.set(19, new Text(lBORD + spo("Starting: " + curvPane.get(3).getLevel()) + rBORD));
+                body.set(20, new Text(lBORD + spo("Previous: " + curvPane.get(4).getLevel()) + rBORD));
+                body.set(25, new Text(lBORD + spo("Primary:  " + curvPane.get(0).getCurve().visibleProperty().getValue()) + rBORD));
+                body.set(26, new Text(lBORD + spo("Next:     " + curvPane.get(0).getCurve().visibleProperty().getValue()) + rBORD));
+                body.set(27, new Text(lBORD + spo("Target:   " + curvPane.get(0).getCurve().visibleProperty().getValue()) + rBORD));
+                body.set(28, new Text(lBORD + spo("Starting: " + curvPane.get(0).getCurve().visibleProperty().getValue()) + rBORD));
+                body.set(29, new Text(lBORD + spo("Previous: " + curvPane.get(0).getCurve().visibleProperty().getValue()) + rBORD));
+                body.set(34, new Text(lBORD + spo("Status: " + curvPane.getStatus()) + rBORD));
+                body.set(35, new Text(lBORD + spo("Frame: " + curvPane.getFrame()) + rBORD));
+                body.set(37, new Text(lBORD + spo("Direction: " + (curvPane.forward ? "Forward" : "Backward") ) + rBORD));
+                body.set(38, new Text(lBORD + spo("Stack: " + curvPane.prevStack) + rBORD));
+                txtBody.getChildren().clear();
+                body.forEach((txt) -> {
+                    txt.setFont(Font.font("Courier New", 12));
+                });
+                txtBody.getChildren().addAll(body);
             }
-            end = end.length()>max ? end.substring(0,max) : end;
-            return end + "|\n";
         }
+        
+        // Bold Text
+        private Text bold(Text txt) {
+            txt.setStyle(BOLD);
+            return txt;
+        }
+        // Space out, right alligned
+        private String spoR(String s) {
+            String indent = " ";
+            for(int i=0; i<max - s.length(); i++) {
+                indent += " ";
+            }
+            return indent + s;
+        }
+        // Space out
+        private String spo(String s) {
+            for(int i=s.length(); i<=max; i++) {
+                s+=" ";
+            }
+            return s;
+        }
+        // Horizontal Rule
         private String hr(char c) {
-            String rule = "";
+            String rule = "" + c;
             for(int i=0; i<max; i++) {
                 rule += c;
             }
             return rule;
         }
+        // Left Border
+        private final String lBORD = "| ";
+        // Right Border
+        private final String rBORD = " |\n";
     }
+    
+    
     
     public static void main(String[] args) {
         // Lunch

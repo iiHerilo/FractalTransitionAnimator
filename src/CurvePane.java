@@ -1,12 +1,7 @@
 // Object for a collection of Ccurves
 
-
 import javafx.scene.layout.Pane;
-import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polyline;
-
 
 public class CurvePane extends Pane {
     private final int FPS = RecursiveFractal.FPS;

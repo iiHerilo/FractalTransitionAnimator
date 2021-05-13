@@ -7,5 +7,6 @@ CURRENT FUNCTIONALITY:
 TO DO:
   - Populate debug menu with more useful info
   - Hide Debug menu button
+  - Animate transitions
   - Optimize
   - Add more fractals
