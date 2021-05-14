@@ -5,6 +5,7 @@ CURRENT FUNCTIONALITY:
   - Increment and decrement the levels of a Lévy C curve
 
 TO DO:
+  - RECREATE/IMPLEMENT IN WEB APP
   - Add more options & actions
   - Optimize
   - Add more fractals
