@@ -1,10 +1,3 @@
 Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.9.7
-Created-By: 1.8.0_141-b15 (Oracle Corporation)
 X-COMMENT: Main-Class will be added automatically by build
-Codebase: *
-Application-Library-Allowable-Codebase: *
-Caller-Allowable-Codebase: *
-Permissions: all-permissions
-Application-Name: Recursive Fractal Transition Animator
 
