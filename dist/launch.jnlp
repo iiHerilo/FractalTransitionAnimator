@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jnlp href="launch.jnlp" spec="1.0+">
+    <information>
+        <title>Recursive Fractal Transition Animator</title>
+        <vendor>Herilo</vendor>
+        <homepage href=""/>
+        <description>Recursive Fractal Transition Animator</description>
+        <description kind="short">Recursive Fractal Transition Animator</description>
+    </information>
+    <update check="always"/>
+    <security>
+<all-permissions/>
+</security>
+    <resources>
+        <j2se version="1.8+"/>
+        <jar href="Recursive_Fractal_Transition_Animator.jar" main="true"/>
+    </resources>
+    <application-desc main-class="MainClass">
+    </application-desc>
+</jnlp>

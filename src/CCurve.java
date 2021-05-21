@@ -31,6 +31,7 @@ public class CCurve extends RecursiveFractal {
     private Polyline curve = null;
     private ObservableList points = null;
     private int level = 0;
+    private String Name = "None";
     
     // Parameter accessors
     public Polyline getCurve() {return curve;}
@@ -41,12 +42,15 @@ public class CCurve extends RecursiveFractal {
             points.add(refp);
         });
     }
+    public String getName() {
+        return Name;
+    }
     
     // Constructors
     public CCurve() {
         curve = new Polyline();
         points = curve.getPoints();
-        setPoints(50,-150,50,150);
+        setPoints(-285,-150,65,-150);
     }
     public CCurve(Color clr, boolean visible) {
         this();
@@ -55,6 +59,10 @@ public class CCurve extends RecursiveFractal {
     public CCurve(Color clr, boolean visible, boolean faded) {
         this();
         setStyle(clr, visible, faded);
+    }
+    public CCurve(Color clr, boolean visible, boolean faded, String name) {
+        this(clr, visible, faded);
+        Name = name;
     }
     public CCurve(Color clr) {
         this();
@@ -124,16 +132,16 @@ public class CCurve extends RecursiveFractal {
     // Mostly copied from "obslistDoubler" of the older program.
     // Takes the midpoints in between each point in a polyline
     public void Midpointify() {
-        dbgl("midpointifyign");
+        //dbgl("midpointifyign");
         if(level <= 0) {
-            dbgl("level is <= 0");
+            //dbgl("level is <= 0");
             firstPosition();
-            dbgl("1, " + points.size());
+            //dbgl("1, " + points.size());
             points.addAll(x1(), y1());
-            dbgl("2, " + points.size());
+           // dbgl("2, " + points.size());
         }
         else {
-            dbgl("level is over 0");
+            //dbgl("level is over 0");
             Midpointify(points);
         }
         

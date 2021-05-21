@@ -14,13 +14,13 @@ public class CurvePane extends Pane {
     private boolean allvis = false;
     
     private final CCurve[] curves = {
-        new CCurve(Color.BLACK, true, false),    // PRIMARY CURVE  lvl-1 -> lvl 0
-        new CCurve(Color.YELLOW, allvis, true),  // NEXT CURVE     lvl+1        1
-        new CCurve(Color.LIME, allvis, true),    // TARGET CURVE   lvl          2
-        new CCurve(Color.MAGENTA, allvis, true), // STARTING CURVE lvl-1        3
-        new CCurve(Color.CYAN, allvis, true)     // PREV CURVE     lvl-2        4
+        new CCurve(Color.BLACK, true, false, "Primary"),     // lvl-1 -> lvl  0
+        new CCurve(Color.YELLOW, allvis, true, "Next"),      // lvl+1         1
+        new CCurve(Color.LIME, allvis, true, "Target"),      // lvl           2
+        new CCurve(Color.MAGENTA, allvis, true, "Starting"), // lvl-1         3
+        new CCurve(Color.CYAN, allvis, true, "Previous")     // lvl-2         4
     };
-    private CCurve tarAlt = new CCurve(Color.RED, false, true);
+    private final CCurve tarAlt = new CCurve(Color.RED, false, true);
     public CCurve mainCurve() {return curves[0];}
     
     // TARGET CURVE   = A
@@ -64,7 +64,8 @@ public class CurvePane extends Pane {
     }
     
     public final void nextAllCurves() {
-        if(!forward) fixCurves();
+        prevStack++;
+        if(!forward && !isAnimating()) fixCurves();
         //curves[2].setPoints(tarAlt.getPoints());
         forward = true;
         incrementLevel();
@@ -73,9 +74,9 @@ public class CurvePane extends Pane {
         }
         curves[1].fullCurve();
         //curves[0].setPoints(curves[2].getPoints()); 
-        System.out.println("No Midpointify, " + (curves[0].getPoints().size() == curves[2].getPoints().size()));
+        //System.out.println("No Midpointify, " + (curves[0].getPoints().size() == curves[2].getPoints().size()));
         curves[0].Midpointify();
-        System.out.println("Ye Midpointify, " + (curves[0].getPoints().size() == curves[2].getPoints().size()));
+        //System.out.println("Ye Midpointify, " + (curves[0].getPoints().size() == curves[2].getPoints().size()));
         tarAlt.setPoints(curves[2].getPoints());
         
     }
@@ -91,11 +92,9 @@ public class CurvePane extends Pane {
         //animate(true);
         
     }
-    
-    
     public final void prevAllCurves() {
         prevStack++;
-        if(forward) fixCurves();
+        if(forward && !isAnimating()) fixCurves();
         tarAlt.setPoints(curves[3].getPoints());
         //curves[2].setPoints(tarAlt.getPoints());
         forward = false;
@@ -118,26 +117,26 @@ public class CurvePane extends Pane {
     }
     
     public int getCorrectLevel(int i) {
-        System.out.print("Correct level for curves[" + i + "] is ");
+        //System.out.print("Correct level for curves[" + i + "] is ");
         switch(i) {
             case 0:
-                System.out.println(paneLevel);
+                //System.out.println(paneLevel);
                 return(paneLevel);
             case 1:
-                System.out.println(paneLevel + 1);
+                //System.out.println(paneLevel + 1);
                 return(paneLevel + 1);
             case 2:
-                System.out.println(paneLevel);
+                //System.out.println(paneLevel);
                 return(paneLevel);
             case 3:
-                System.out.println(paneLevel - 1);
+                //System.out.println(paneLevel - 1);
                 return(paneLevel - 1);
             case 4:
-                System.out.println(paneLevel - 2);
+                //System.out.println(paneLevel - 2);
                 return(paneLevel - 2);
             default:
-                System.out.println(i + " is out of curves[]'s index.");
-                System.out.println(curves[i]);
+                //System.out.println(i + " is out of curves[]'s index.");
+                //System.out.println(curves[i]);
                 return(-1);
         }
     }
@@ -196,10 +195,11 @@ public class CurvePane extends Pane {
     }
     public void wrapUp() {
         animating = false;
+        prevStack = 0;
         if(!forward) {
-            dbgl("Wrapping up...");
+            //dbgl("Wrapping up...");
             curves[0].setPoints(tarAlt.getPoints());
-            prevStack = 0;
+            
         }
     }
     
